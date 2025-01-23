@@ -12,22 +12,52 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  // Método para insertar un usuario administrador
+  async seedAdminUser() {
+    const existingAdmin = await this.userModel.findOne({ username: 'admin' });
+  
+    if (!existingAdmin) {
+      const adminUser = new this.userModel({
+        username: 'admin',
+        password: '123456', // Contraseña sin encriptar
+        role: 'admin',
+      });
+      await adminUser.save();
+      console.log('Usuario administrador creado exitosamente.');
+    } else {
+      console.log('El usuario administrador ya existe.');
+    }
+  }
+  
+
+
+
   async register(username: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new this.userModel({ username, password: hashedPassword });
     return user.save();
   }
 
+
+
   async login(username: string, password: string) {
     const user = await this.userModel.findOne({ username });
-    if (!user) throw new Error('Credenciales invalidas');
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) throw new Error('Credenciales invalidas');
-
+  
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+  
+    // Comparación directa sin encriptación
+    if (password !== user.password) {
+      throw new Error('Contraseña incorrecta');
+    }
+  
     const payload = { username: user.username, role: user.role };
     const token = this.jwtService.sign(payload);
-
+  
     return { token };
   }
+  
+
+  
 }
