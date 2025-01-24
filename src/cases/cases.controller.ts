@@ -2,10 +2,17 @@ import { Controller, Get, Post, Patch, Delete, Param, Body, Req, UseGuards, NotF
 import { CasesService } from './cases.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthRequest } from '../auth/auth-request.interface';
+import { Case } from './schemas/case.schema';
 
 @Controller('cases')
 export class CasesController {
   constructor(private readonly casesService: CasesService) {}
+
+  // Endpoint para listar todos los casos
+  @Get()
+  async getAllCases(): Promise<Case[]> {
+    return this.casesService.findAll();
+  }
 
   @UseGuards(AuthGuard)
   @Get()

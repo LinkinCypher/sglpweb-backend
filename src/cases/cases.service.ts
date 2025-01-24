@@ -11,6 +11,11 @@ export class CasesService {
     private countersService: CountersService,
   ) {}
 
+  // Listar todos los casos (sin filtrar por usuario)
+  async findAll(): Promise<Case[]> {
+    return this.caseModel.find({ activo: true }).exec();
+  }
+
   // Listar casos del usuario autenticado
   async findAllByUser(userId: string): Promise<Case[]> {
     return this.caseModel.find({ createdBy: userId, activo: true }).exec();
