@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Param } from '@nestjs/common';
+import { CountersService } from './counters/counters.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly countersService: CountersService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('test-counter/:entity')
+  async testCounter(@Param('entity') entity: string) {
+    const nextValue = await this.countersService.getNextValue(entity);
+    return { entity, nextValue };
   }
 }
