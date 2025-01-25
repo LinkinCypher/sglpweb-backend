@@ -20,6 +20,9 @@ export class Task extends Document {
 
   @Prop({ type: [String], default: [] })
   evidencias: string[]; // Lista de URLs o rutas de archivos adjuntos
+
+  @Prop({ required: true }) // Campo para relacionar la tarea con el usuario creador
+  createdBy: string;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

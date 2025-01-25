@@ -8,9 +8,11 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   // Crear una nueva tarea
+  @UseGuards(AuthGuard) // Protege el endpoint con autenticación
   @Post()
-  async createTask(@Body() data: Partial<Task>): Promise<Task> {
-    return await this.tasksService.createTask(data);
+  async createTask(@Body() data: Partial<Task>, @Req() req: any): Promise<Task> {
+    const userId = req.user.id; // Obtén el ID del usuario autenticado
+    return await this.tasksService.createTask(data, userId);
   }
 
   // Obtener todas las tareas de un caso
@@ -23,8 +25,8 @@ export class TasksController {
   @UseGuards(AuthGuard)
   @Get('user')
   async getTasksByUser(@Req() req: any): Promise<Task[]> {
-    const userId = req.user.id; // ID del usuario autenticado, extraído del token JWT
-    return await this.tasksService.getTasksByUser(userId);
+    const userId = req.user.id; // ID del usuario autenticado desde el token
+    return this.tasksService.getTasksByUser(userId);
   }
 
   // Actualizar una tarea

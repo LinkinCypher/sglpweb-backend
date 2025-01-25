@@ -8,8 +8,8 @@ export class TasksService {
   constructor(@InjectModel(Task.name) private readonly taskModel: Model<Task>) {}
 
   // Crear una nueva tarea
-  async createTask(data: Partial<Task>): Promise<Task> {
-    const newTask = new this.taskModel(data);
+  async createTask(data: Partial<Task>, userId: string): Promise<Task> {
+    const newTask = new this.taskModel({ ...data, createdBy: userId });
     return await newTask.save();
   }
 
@@ -20,8 +20,8 @@ export class TasksService {
 
   // Obtener tareas por usuario
   async getTasksByUser(userId: string): Promise<Task[]> {
-    return await this.taskModel.find({ createdBy: userId }).exec();
-  }
+    return this.taskModel.find({ createdBy: userId }).exec();
+  }  
 
   // Actualizar una tarea
   async updateTask(id: string, data: Partial<Task>): Promise<Task> {
@@ -36,7 +36,7 @@ export class TasksService {
   async deleteTask(id: string): Promise<Task> {
     const deletedTask = await this.taskModel.findByIdAndUpdate(
       id,
-      { estado: 'eliminada' }, // Suponiendo que "estado" maneja la eliminación lógica
+      { estado: 'eliminada' },
       { new: true }
     ).exec();
     if (!deletedTask) {
