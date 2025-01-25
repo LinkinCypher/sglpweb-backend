@@ -18,6 +18,11 @@ export class TasksService {
     return await this.taskModel.find({ casoId }).exec();
   }
 
+  // Obtener tareas por usuario
+  async getTasksByUser(userId: string): Promise<Task[]> {
+    return await this.taskModel.find({ createdBy: userId }).exec();
+  }
+
   // Actualizar una tarea
   async updateTask(id: string, data: Partial<Task>): Promise<Task> {
     const updatedTask = await this.taskModel.findByIdAndUpdate(id, data, { new: true }).exec();
@@ -29,7 +34,11 @@ export class TasksService {
 
   // Eliminar una tarea (eliminación lógica)
   async deleteTask(id: string): Promise<Task> {
-    const deletedTask = await this.taskModel.findByIdAndUpdate(id, { estado: 'eliminada' }, { new: true }).exec();
+    const deletedTask = await this.taskModel.findByIdAndUpdate(
+      id,
+      { estado: 'eliminada' }, // Suponiendo que "estado" maneja la eliminación lógica
+      { new: true }
+    ).exec();
     if (!deletedTask) {
       throw new NotFoundException(`Task with ID "${id}" not found.`);
     }
