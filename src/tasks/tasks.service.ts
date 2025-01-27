@@ -13,34 +13,43 @@ export class TasksService {
     return await newTask.save();
   }
 
-  // Obtener tareas por caso
-  async getTasksByCase(casoId: string): Promise<Task[]> {
-    return await this.taskModel.find({ casoId }).exec();
+  // Obtener tareas por caso y usuario
+  async getTasksByCaseAndUser(casoId: string, userId: string): Promise<Task[]> {
+    return await this.taskModel.find({ casoId, createdBy: userId }).exec();
   }
 
   // Obtener tareas por usuario
   async getTasksByUser(userId: string): Promise<Task[]> {
     return this.taskModel.find({ createdBy: userId }).exec();
-  }  
+  }
 
-  // Actualizar una tarea
-  async updateTask(id: string, data: Partial<Task>): Promise<Task> {
-    const updatedTask = await this.taskModel.findByIdAndUpdate(id, data, { new: true }).exec();
+  // Obtener una tarea por ID y usuario
+  async getTaskByIdAndUser(id: string, userId: string): Promise<Task> {
+    const task = await this.taskModel.findOne({ _id: id, createdBy: userId }).exec();
+    if (!task) {
+      throw new NotFoundException(`Task with ID "${id}" not found or not accessible.`);
+    }
+    return task;
+  }
+
+  // Actualizar una tarea por usuario
+  async updateTaskByUser(id: string, data: Partial<Task>, userId: string): Promise<Task> {
+    const updatedTask = await this.taskModel
+      .findOneAndUpdate({ _id: id, createdBy: userId }, data, { new: true })
+      .exec();
     if (!updatedTask) {
-      throw new NotFoundException(`Task with ID "${id}" not found.`);
+      throw new NotFoundException(`Task with ID "${id}" not found or not accessible.`);
     }
     return updatedTask;
   }
 
-  // Eliminar una tarea (eliminación lógica)
-  async deleteTask(id: string): Promise<Task> {
-    const deletedTask = await this.taskModel.findByIdAndUpdate(
-      id,
-      { estado: 'eliminada' },
-      { new: true }
-    ).exec();
+  // Eliminar una tarea por usuario
+  async deleteTaskByUser(id: string, userId: string): Promise<Task> {
+    const deletedTask = await this.taskModel
+      .findOneAndUpdate({ _id: id, createdBy: userId }, { estado: 'eliminada' }, { new: true })
+      .exec();
     if (!deletedTask) {
-      throw new NotFoundException(`Task with ID "${id}" not found.`);
+      throw new NotFoundException(`Task with ID "${id}" not found or not accessible.`);
     }
     return deletedTask;
   }
