@@ -11,40 +11,33 @@ export class TasksController {
   @UseGuards(AuthGuard)
   @Post()
   async createTask(@Body() data: Partial<Task>, @Req() req: any): Promise<Task> {
-    const userId = req.user.id; // Obtén el ID del usuario autenticado
-    return await this.tasksService.createTask(data, userId);
+    const userId = req.user.id; // ID del usuario autenticado
+    const assignedTo = data.assignedTo || userId; // Si no se asigna, se asigna al creador
+    return await this.tasksService.createTask({ ...data, assignedTo }, userId);
   }
 
-  // Obtener todas las tareas de un caso
+  // Obtener todas las tareas asignadas al usuario autenticado
   @UseGuards(AuthGuard)
-  @Get('case/:casoId')
-  async getTasksByCase(@Param('casoId') casoId: string, @Req() req: any): Promise<Task[]> {
-    const userId = req.user.id;
-    return await this.tasksService.getTasksByCaseAndUser(casoId, userId);
+  @Get('assigned')
+  async getAssignedTasks(@Req() req: any): Promise<Task[]> {
+    const userId = req.user.id; // ID del usuario autenticado
+    return await this.tasksService.getTasksByAssignedTo(userId);
   }
 
-  // Obtener todas las tareas creadas por el usuario autenticado
-  @UseGuards(AuthGuard)
-  @Get('user')
-  async getTasksByUser(@Req() req: any): Promise<Task[]> {
-    const userId = req.user.id; // ID del usuario autenticado desde el token
-    return this.tasksService.getTasksByUser(userId);
-  }
-
-  // Obtener una tarea por ID (validar que pertenece al usuario)
+  // Obtener una tarea por ID (validar que pertenece al usuario asignado)
   @UseGuards(AuthGuard)
   @Get(':id')
   async getTaskById(@Param('id') id: string, @Req() req: any): Promise<Task> {
     const userId = req.user.id; // ID del usuario autenticado
-    return this.tasksService.getTaskByIdAndUser(id, userId);
+    return this.tasksService.getTaskByIdAndAssignedTo(id, userId);
   }
 
-  // Actualizar una tarea (validar que pertenece al usuario)
+  // Actualizar una tarea (validar que pertenece al usuario asignado)
   @UseGuards(AuthGuard)
   @Patch(':id')
   async updateTask(@Param('id') id: string, @Body() data: Partial<Task>, @Req() req: any): Promise<Task> {
     const userId = req.user.id; // ID del usuario autenticado
-    return await this.tasksService.updateTaskByUser(id, data, userId);
+    return await this.tasksService.updateTaskByAssignedTo(id, data, userId);
   }
 
   // Eliminar una tarea (eliminación lógica)
@@ -52,6 +45,6 @@ export class TasksController {
   @Delete(':id')
   async deleteTask(@Param('id') id: string, @Req() req: any): Promise<Task> {
     const userId = req.user.id; // ID del usuario autenticado
-    return await this.tasksService.deleteTaskByUser(id, userId);
+    return await this.tasksService.deleteTaskByAssignedTo(id, userId);
   }
 }
