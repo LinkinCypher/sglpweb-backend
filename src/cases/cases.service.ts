@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Case } from './schemas/case.schema';
+import { Task } from '../tasks/schemas/task.schema';
 import { CountersService } from '../counters/counters.service';
 
 @Injectable()
 export class CasesService {
   constructor(
     @InjectModel(Case.name) private caseModel: Model<Case>,
+    @InjectModel(Task.name) private taskModel: Model<Task>,
     private countersService: CountersService,
   ) {}
 
@@ -53,5 +55,20 @@ export class CasesService {
         { new: true },
       )
       .exec();
+  }
+
+  // Obtener casos con tareas asociadas
+  async getCasesWithTasks(): Promise<any[]> {
+    // Obtener todos los casos activos
+    const cases = await this.caseModel.find({ activo: true }).lean().exec();
+
+    // Obtener todas las tareas activas
+    const tasks = await this.taskModel.find().lean().exec();
+
+    // Combinar casos con sus tareas relacionadas
+    return cases.map((caso) => ({
+      ...caso,
+      tareas: tasks.filter((task) => task.casoId === caso._id.toString()), // Relacionar tareas por casoId
+    }));
   }
 }

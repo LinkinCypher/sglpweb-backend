@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, Req, UseGuards, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  Req,
+  UseGuards,
+  NotFoundException,
+} from '@nestjs/common';
 import { CasesService } from './cases.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { AuthRequest } from '../auth/auth-request.interface';
@@ -52,5 +63,11 @@ export class CasesController {
       throw new NotFoundException('Caso no encontrado o no autorizado');
     }
     return { message: 'Caso eliminado lógicamente' };
+  }
+
+  // Obtener casos con tareas asociadas
+  @Get('with-tasks')
+  async getCasesWithTasks() {
+    return this.casesService.getCasesWithTasks();
   }
 }
