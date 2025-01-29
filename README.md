@@ -35,9 +35,9 @@ Las siguientes herramientas son importantes:
 ## ⚙️ Ejecutar la aplicación
 Navegar a la carpeta del proyecto y ejecutar los siguientes comandos:
 ```bash
-npm install  # Instalar dependencias del proyecto
+npm install
 ```
-Compilar y crear la carpeta dist:
+Crear la carpeta dist:
 ```bash
 npm run build
 ```
@@ -49,10 +49,10 @@ npm run start:dev
 
 
 ## 🔑 Cargar usuarios a MongoDB
-<li>Conéctate a tu instancia de MongoDB.</li>
-<li>Selecciona la base de datos utilizada en el proyecto.</li>
-<li>Abre la colección de usuarios (users).</li>
-<li>Inserta el siguiente JSON:</li>
+<li>Entrar en la instancia de MongoDB.</li>
+<li>Seleccionar la base de datos utilizada en el proyecto (sglpweb).</li>
+<li>Abrir la colección de usuarios (users).</li>
+<li>Insertar el siguiente JSON:</li>
 
 ```bash
 [
@@ -67,5 +67,5 @@ npm run start:dev
 ```
 
 ### ✅ Credenciales de acceso:
-Usuario: admin
-Contraseña: admin
+<li>Usuario: admin </li>
+<li>Contraseña: admin </li>
