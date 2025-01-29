@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { User } from '../../auth/schemas/user.schema';
 
 @Schema()
 export class Case extends Document {
@@ -21,8 +22,11 @@ export class Case extends Document {
   @Prop({ required: true })
   createdBy: string; // Usuario que creó el caso
 
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] }) // Ahora es un array de usuarios
+  assignedTo: Types.ObjectId[] | User[];
+
   @Prop({ default: true })
-  activo: boolean; // Estado lógico del caso
+  activo: boolean;
 }
 
 export const CaseSchema = SchemaFactory.createForClass(Case);

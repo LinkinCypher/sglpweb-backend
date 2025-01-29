@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { User } from '../../auth/schemas/user.schema'; // Importar el esquema de usuario
 
 @Schema({ timestamps: true })
 export class Task extends Document {
@@ -24,8 +25,8 @@ export class Task extends Document {
   @Prop({ required: true }) // Usuario creador
   createdBy: string;
 
-  @Prop({ required: true }) // Usuario asignado
-  assignedTo: string;
+  @Prop({ type: Types.ObjectId, ref: 'User' }) // Usuario asignado con referencia a User
+  assignedTo: Types.ObjectId | User;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);

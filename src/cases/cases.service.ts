@@ -59,16 +59,29 @@ export class CasesService {
 
   // Obtener casos con tareas asociadas
   async getCasesWithTasks(): Promise<any[]> {
-    // Obtener todos los casos activos
-    const cases = await this.caseModel.find({ activo: true }).lean().exec();
-
-    // Obtener todas las tareas activas
-    const tasks = await this.taskModel.find().lean().exec();
-
-    // Combinar casos con sus tareas relacionadas
+    const cases = await this.caseModel
+      .find({ activo: true })
+      .populate({ path: 'assignedTo', select: 'username' }) // Poblar el array de usuarios en casos
+      .lean()
+      .exec();
+  
+    const tasks = await this.taskModel
+      .find()
+      .populate({ path: 'assignedTo', select: 'username' }) // Poblar usuarios en tareas
+      .lean()
+      .exec();
+  
     return cases.map((caso) => ({
       ...caso,
-      tareas: tasks.filter((task) => task.casoId === caso._id.toString()), // Relacionar tareas por casoId
+      tareas: tasks
+        .filter((task) => task.casoId === caso._id.toString())
+        .map((task) => ({
+          ...task,
+          assignedTo: task.assignedTo || null, // Asegura que assignedTo se incluya en cada tarea
+        })),
     }));
-  }
+}
+
+  
+  
 }
